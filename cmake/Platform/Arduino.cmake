@@ -644,10 +644,13 @@ endfunction()
 #=============================================================================#
 function(REGISTER_HARDWARE_PLATFORM PLATFORM_PATH)
 	string(REGEX REPLACE "/$" "" PLATFORM_PATH ${PLATFORM_PATH})
+	GET_FILENAME_COMPONENT(PLATFORM_PATH ${PLATFORM_PATH} ABSOLUTE)
     GET_FILENAME_COMPONENT(PLATFORM_ARCH ${PLATFORM_PATH} NAME)
 	
 	GET_FILENAME_COMPONENT(PLATFORM_PARENT_PATH ${PLATFORM_PATH} PATH)
 	GET_FILENAME_COMPONENT(PLATFORM ${PLATFORM_PARENT_PATH} NAME)	
+	
+	set(PLATFORM "arduino")
 	
 	if(NOT ARDUINO_1_5)
 		set(PLATFORM "${PLATFORM_ARCH}")
@@ -2146,7 +2149,12 @@ set(ARDUINO_AVRDUDE_FLAGS -V                              CACHE STRING "")
 #=============================================================================#
 if(NOT ARDUINO_FOUND AND ARDUINO_SDK_PATH)
 	if(ARDUINO_1_5)
-		register_hardware_platform(${ARDUINO_SDK_PATH}/hardware/arduino/avr/)
+		if(ARDUINO_CORE_PATH)
+			register_hardware_platform(${ARDUINO_CORE_PATH})
+		else()
+			#default core
+			register_hardware_platform(${ARDUINO_SDK_PATH}/hardware/arduino/avr/)
+		endif()
 	else()
 		register_hardware_platform(${ARDUINO_SDK_PATH}/hardware/arduino/)
 	endif()
